@@ -1,54 +1,168 @@
 // Game configuration and state variables
-const GOAL_CANS = 25;        // Total items needed to collect
-let currentCans = 0;         // Current number of items collected
-let gameActive = false;      // Tracks if game is currently running
-let spawnInterval;          // Holds the interval for spawning items
+const DIFFICULTIES = {
+  easy: { label: 'Easy', goal: 10, timeLimit: 45, spawnInterval: 1400 },
+  normal: { label: 'Normal', goal: 15, timeLimit: 30, spawnInterval: 1000 },
+  hard: { label: 'Hard', goal: 20, timeLimit: 20, spawnInterval: 700 }
+};
 
-// Creates the 3x3 game grid where items will appear
+let currentCans = 0;
+let gameActive = false;
+let spawnInterval;
+let timerInterval;
+let timeLeft = 0;
+let goalCans = 0;
+let currentDifficulty = 'normal';
+
+const grid = document.querySelector('.game-grid');
+const startButton = document.getElementById('start-game');
+const difficultySelect = document.getElementById('difficulty');
+const currentCansDisplay = document.getElementById('current-cans');
+const timerDisplay = document.getElementById('timer');
+const instructions = document.querySelector('.game-instructions');
+const achievementBox = document.getElementById('achievements');
+
 function createGrid() {
-  const grid = document.querySelector('.game-grid');
-  grid.innerHTML = ''; // Clear any existing grid cells
+  grid.innerHTML = '';
   for (let i = 0; i < 9; i++) {
     const cell = document.createElement('div');
-    cell.className = 'grid-cell'; // Each cell represents a grid square
+    cell.className = 'grid-cell';
     grid.appendChild(cell);
   }
 }
 
-// Ensure the grid is created when the page loads
-createGrid();
+function getCurrentDifficulty() {
+  return DIFFICULTIES[currentDifficulty] || DIFFICULTIES.normal;
+}
 
-// Spawns a new item in a random grid cell
-function spawnWaterCan() {
-  if (!gameActive) return; // Stop if the game is not active
+function updateInstructions() {
+  const selectedDifficulty = getCurrentDifficulty();
+  instructions.textContent = `Collect ${selectedDifficulty.goal} cans on ${selectedDifficulty.label} mode before the timer runs out!`;
+}
+
+function updateStats() {
+  currentCansDisplay.textContent = currentCans;
+  timerDisplay.textContent = timeLeft;
+}
+
+function setStatus(message, isSuccess = false) {
+  achievementBox.textContent = message;
+  achievementBox.className = `achievement ${isSuccess ? 'success' : ''}`.trim();
+}
+
+function clearGrid() {
   const cells = document.querySelectorAll('.grid-cell');
-  
-  // Clear all cells before spawning a new water can
-  cells.forEach(cell => (cell.innerHTML = ''));
+  cells.forEach((cell) => {
+    cell.innerHTML = '';
+    cell.classList.remove('has-water-can');
+  });
+}
 
-  // Select a random cell from the grid to place the water can
+function spawnWaterCan() {
+  if (!gameActive) return;
+
+  clearGrid();
+
+  const cells = document.querySelectorAll('.grid-cell');
   const randomCell = cells[Math.floor(Math.random() * cells.length)];
+  const wrapper = document.createElement('div');
+  wrapper.className = 'water-can-wrapper';
 
-  // Use a template literal to create the wrapper and water-can element
-  randomCell.innerHTML = `
-    <div class="water-can-wrapper">
-      <div class="water-can"></div>
-    </div>
-  `;
+  const waterCan = document.createElement('div');
+  waterCan.className = 'water-can';
+  waterCan.setAttribute('role', 'button');
+  waterCan.setAttribute('tabindex', '0');
+  waterCan.setAttribute('aria-label', 'Collect water can');
+
+  wrapper.appendChild(waterCan);
+  randomCell.appendChild(wrapper);
+  randomCell.classList.add('has-water-can');
 }
 
-// Initializes and starts a new game
+function endGame(message) {
+  if (!gameActive) return;
+
+  gameActive = false;
+  clearInterval(spawnInterval);
+  clearInterval(timerInterval);
+  clearGrid();
+  setStatus(message, currentCans >= goalCans);
+  startButton.textContent = 'Start Game';
+}
+
 function startGame() {
-  if (gameActive) return; // Prevent starting a new game if one is already active
+  if (gameActive) {
+    endGame('Game restarted.');
+  }
+
+  currentDifficulty = difficultySelect.value;
+  const selectedDifficulty = getCurrentDifficulty();
+  currentCans = 0;
+  goalCans = selectedDifficulty.goal;
+  timeLeft = selectedDifficulty.timeLimit;
   gameActive = true;
-  createGrid(); // Set up the game grid
-  spawnInterval = setInterval(spawnWaterCan, 1000); // Spawn water cans every second
+  startButton.textContent = 'Restart Game';
+
+  createGrid();
+  updateInstructions();
+  updateStats();
+  setStatus(`Starting ${selectedDifficulty.label} mode!`);
+
+  clearInterval(spawnInterval);
+  clearInterval(timerInterval);
+
+  spawnInterval = setInterval(spawnWaterCan, selectedDifficulty.spawnInterval);
+  timerInterval = setInterval(() => {
+    timeLeft -= 1;
+    updateStats();
+
+    if (timeLeft <= 0) {
+      endGame(`Time is up! You collected ${currentCans} cans.`);
+    }
+  }, 1000);
+
+  spawnWaterCan();
 }
 
-function endGame() {
-  gameActive = false; // Mark the game as inactive
-  clearInterval(spawnInterval); // Stop spawning water cans
-}
+grid.addEventListener('click', (event) => {
+  const can = event.target.closest('.water-can');
+  if (!can || !gameActive) return;
 
-// Set up click handler for the start button
-document.getElementById('start-game').addEventListener('click', startGame);
+  const cell = can.closest('.grid-cell');
+  if (!cell) return;
+
+  cell.innerHTML = '';
+  currentCans += 1;
+  updateStats();
+
+  if (currentCans >= goalCans) {
+    endGame(`You win! You collected ${currentCans} cans.`);
+    return;
+  }
+
+  setStatus(`Collected ${currentCans} so far! ${goalCans - currentCans} to go.`);
+
+  setTimeout(() => {
+    if (gameActive) {
+      spawnWaterCan();
+    }
+  }, 250);
+});
+
+difficultySelect.addEventListener('change', () => {
+  currentDifficulty = difficultySelect.value;
+  updateInstructions();
+
+  if (!gameActive) {
+    const selectedDifficulty = getCurrentDifficulty();
+    timeLeft = selectedDifficulty.timeLimit;
+    updateStats();
+    setStatus(`Ready for ${selectedDifficulty.label} mode.`);
+  }
+});
+
+startButton.addEventListener('click', startGame);
+
+createGrid();
+updateInstructions();
+updateStats();
+setStatus('Choose a difficulty and start the game.');

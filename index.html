@@ -8,15 +8,32 @@
 </head>
 <body>
   <div class="container">
+    <div class="brand-banner">
+      <img src="img/cw_logo_horizontal.png" alt="charity: water logo" class="brand-logo" />
+      <p class="brand-tagline">Collect every drop and help keep the mission flowing.</p>
+    </div>
     <h1>Water Quest</h1>
-    <p class="game-instructions">Collect 20 items to complete the game!</p>
+    <div class="controls">
+      <label for="difficulty">Difficulty:</label>
+      <select id="difficulty">
+        <option value="easy">Easy</option>
+        <option value="normal" selected>Normal</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+    <p class="game-instructions">Collect cans before the timer runs out.</p>
     <div class="stats">
       <p>Cans Collected: <span id="current-cans">0</span></p>
-      <p>Time Left: <span id="timer">30</span>s</p>
+      <p>Time Left: <span id="timer">0</span>s</p>
     </div>
-    <div id="achievements" class="achievement"></div>
+    <div id="achievements" class="achievement">Choose a difficulty and start the game.</div>
     <div class="game-grid"></div>
     <button id="start-game">Start Game</button>
+    <footer class="site-footer">
+      <img src="img/cw_logo.png" alt="charity: water icon" class="footer-logo" />
+      <p>Support <a href="https://www.charitywater.org/" target="_blank" rel="noopener noreferrer">charity: water</a></p>
+      <p><a href="https://www.charitywater.org/donate" target="_blank" rel="noopener noreferrer">Donate now</a></p>
+    </footer>
   </div>
   <script src="script.js"></script>
 </body>

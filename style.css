@@ -18,33 +18,61 @@ Fonts:
 
 */
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+:root {
+  --cw-blue: #2E9DF7;
+  --cw-yellow: #FFC907;
+  --cw-green: #4FCB53;
+  --cw-dark: #1f3a5f;
+  --cw-text: #23395d;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Montserrat', Arial, sans-serif;
   margin: 0;
   padding: 30px;
-  background-color: #f0f0f0;
-  color: #333;
+  background: linear-gradient(135deg, #f8fbff 0%, #eaf7ff 100%);
+  color: var(--cw-text);
 }
 
 .container {
-  max-width: 750px;
+  max-width: 780px;
   margin: 50px auto;
-  background-color: #fff;
+  background: #ffffff;
   padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(46, 157, 247, 0.15);
+  border: 2px solid rgba(46, 157, 247, 0.12);
+}
+
+.brand-banner {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.brand-logo {
+  max-width: 240px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.brand-tagline {
+  margin: 0;
+  color: var(--cw-dark);
+  font-weight: 600;
 }
 
 h1 {
   text-align: center;
-  font-size: 30px;
-  font-weight: bold;
+  font-size: 32px;
+  font-weight: 700;
   margin-bottom: 20px;
-  color: #333;
+  color: var(--cw-dark);
 }
 
 h1 img {
@@ -53,16 +81,35 @@ h1 img {
   display: block;
 }
 
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.controls label {
+  font-weight: bold;
+}
+
+.controls select {
+  padding: 8px 12px;
+  border: 1px solid #2E9DF7;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
 .game-instructions {
   font-size: 18px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   text-align: center;
 }
 
 .stats {
   display: flex;
   justify-content: space-around;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
   background-color: #f5f5f5;
   padding: 15px 0;
   border-radius: 8px;
@@ -73,6 +120,18 @@ h1 img {
   font-size: 18px;
   font-weight: bold;
   color: #333;
+}
+
+.achievement {
+  min-height: 28px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #2E9DF7;
+  font-weight: bold;
+}
+
+.achievement.success {
+  color: #159A48;
 }
 
 .game-grid {
@@ -96,6 +155,10 @@ h1 img {
   overflow: hidden;
 }
 
+.grid-cell:hover {
+  background-color: #dcdcdc;
+}
+
 .water-can-wrapper {
   position: absolute;
   top: 50%;
@@ -109,14 +172,15 @@ h1 img {
 .water-can {
   width: 100%;
   height: 100%;
-  background-image: url('img/water-can.png');
-  background-size: cover;
+  background-image: url('img/water-can-transparent.png');
+  background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
   cursor: pointer;
   border-radius: 50%;
   animation: popUp 0.5s cubic-bezier(0.17, 0.67, 0.34, 2);
-  transform-origin: center; /* Ensure scaling happens from the center */
+  transform-origin: center;
+  filter: drop-shadow(0 6px 10px rgba(46, 157, 247, 0.25));
 }
 
 @keyframes popUp {
@@ -130,14 +194,47 @@ h1 img {
 
 
 button {
-  background-color: #4CAF50;
+  background: linear-gradient(135deg, var(--cw-blue) 0%, #1f8de8 100%);
   color: white;
   border: none;
   padding: 12px 24px;
   font-size: 16px;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   display: block;
   margin: 30px auto 0;
-  transition: background-color 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 8px 16px rgba(46, 157, 247, 0.2);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(46, 157, 247, 0.25);
+}
+
+.site-footer {
+  margin-top: 24px;
+  text-align: center;
+  border-top: 1px solid #e0e0e0;
+  padding-top: 16px;
+}
+
+.footer-logo {
+  width: 48px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+.site-footer p {
+  margin: 6px 0;
+}
+
+.site-footer a {
+  color: var(--cw-blue);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  text-decoration: underline;
 }
